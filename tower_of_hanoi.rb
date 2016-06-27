@@ -1,23 +1,44 @@
-require 'pry'
+require 'byebug'
 
 class TowerOfHanoi
-  attr_accessor :rows, :game_over
+  attr_accessor :rows, :game_over, :disks, :columns, :victory_column
 
-  def initialize
-    @columns = [ [1,2,3], [0,0,0] , [0,0,0] ]
+  def initialize(disks=3)
+    @disks = disks
+    @columns = []
     @game_over = false
+    @rows = []
+  end
+
+  def setup
+    full_column = []
+    empty_column = []
+    rows = []
+
+    @disks.times do |disk_size|
+      full_column << disk_size + 1
+    end
+
+    @disks.times do |disk_size|
+      empty_column << 0
+    end
+
+    @columns[0] = full_column
+    @columns[1] = empty_column
+    @columns[2] = empty_column.dup
+    @victory_column = full_column
+
+    @disks.times do
+      rows << [0,0,0]
+    end
+
+    @rows = rows
   end
 
   def columns_to_rows
-    rows = [ [0,0,0], [0,0,0], [0,0,0] ]
-    
     @columns.each_with_index do |column, x_coordinate|
       column.each_with_index do |cell, y_coordinate|
-        if cell == 0
-          next
-        else
-          rows[y_coordinate][x_coordinate] = cell
-        end
+        @rows[y_coordinate][x_coordinate] = cell
       end
     end
 
@@ -29,7 +50,7 @@ class TowerOfHanoi
     rows.each do |row|
       print '|'
       row.each do |cell|
-        extra_space = " " * (10 - cell)
+        extra_space = " " * (@disks - cell)
         print '*' * cell
         print "#{extra_space}|"
       end
@@ -42,13 +63,15 @@ class TowerOfHanoi
     to = @columns[to_column.to_i - 1]
     disk_size = 0
     from_cell_index = 0
-    to_cell_index = 2
+    to_cell_index = @disks - 1
 
     from.each_with_index do |cell, cell_index|
       if cell != 0
         disk_size = cell
         from_cell_index = cell_index
+        puts from[cell_index]
         from[cell_index] = 0
+        puts from[cell_index]
         break
       end
     end
@@ -75,13 +98,14 @@ class TowerOfHanoi
 
   def check_victory
     @columns.each_with_index do |column, index|
-      if index != 0 && column == [1,2,3]
+      if index != 0 && column == @victory_column
         @game_over = true
       end
     end
   end
 
   def play
+    setup
     puts "Move these three disks to another column. Follow these three rules:"
     puts "\t1. Only one disk can be moved at a time."
     puts "\t2. Each move consists of taking the upper disk from one of the stacks and placing it on top of another stack."
@@ -107,8 +131,11 @@ class TowerOfHanoi
   end
 end
 
-game = TowerOfHanoi.new
+game = TowerOfHanoi.new(3)
+
 game.play
+
+
 
 
 
