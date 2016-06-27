@@ -114,11 +114,11 @@ class TowerOfHanoi
     render
 
     until @game_over
-      puts "Move from which column?"
+      puts "Move from which column? (type 'q' to quit)"
       from_column = gets.chomp
       check_quit(from_column)
 
-      puts "Move to which column?"
+      puts "Move to which column? (type 'q' to quit)"
       to_column = gets.chomp
       check_quit(to_column)
 
